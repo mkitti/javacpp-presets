@@ -1,0 +1,24 @@
+--- hdf5-1.14.0/java/src/jni/CMakeLists.txt.orig	2023-02-28 02:46:05.889004287 -0500
++++ hdf5-1.14.0/java/src/jni/CMakeLists.txt	2023-02-28 02:49:21.528485612 -0500
+@@ -35,6 +35,10 @@
+     ${HDF5_JAVA_JNI_SOURCE_DIR}/h5vlImp.c
+     ${HDF5_JAVA_JNI_SOURCE_DIR}/h5zImp.c
+     ${HDF5_JAVA_JNI_SOURCE_DIR}/nativeData.c
++    ${HDF5_JAVA_JNI_SOURCE_DIR}/h5fHelperImp.c
++    ${HDF5_JAVA_JNI_SOURCE_DIR}/h5lHelperImp.c
++    ${HDF5_JAVA_JNI_SOURCE_DIR}/h5pHelperImp.c
++    ${HDF5_JAVA_JNI_SOURCE_DIR}/h5VLStrHelperImp.c
+ )
+ 
+ set (HDF5_JAVA_JNI_CHDRS
+--- hdf5-1.14.0/java/src/jni/Makefile.am.orig	2023-02-28 03:25:11.486145086 -0500
++++ hdf5-1.14.0/java/src/jni/Makefile.am	2023-02-28 03:24:00.882341126 -0500
+@@ -36,7 +36,7 @@
+ 	h5pImp.c h5pACPLImp.c h5pDAPLImp.c h5pDCPLImp.c h5pDXPLImp.c \
+ 	h5pFAPLImp.c h5pFCPLImp.c h5pGAPLImp.c h5pGCPLImp.c h5pLAPLImp.c h5pLCPLImp.c \
+ 	h5pOCPLImp.c h5pOCpyPLImp.c h5pStrCPLImp.c h5plImp.c h5rImp.c h5sImp.c h5tImp.c \
+-	h5vlImp.c h5zImp.c
++	h5vlImp.c h5zImp.c h5fHelperImp.c h5lHelperImp.c h5pHelperImp.c h5VLStrHelperImp.c
+ 
+ 
+ # HDF5 Java (JNI) library depends on HDF5 Library.

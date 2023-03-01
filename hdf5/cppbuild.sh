@@ -19,6 +19,15 @@ echo "Decompressing archives..."
 tar --totals -xf ../hdf5-$HDF5_VERSION.tar.bz2
 cd hdf5-$HDF5_VERSION
 
+# Copy SIS JHDF5 helper files
+# Copyright 2007 - 2018 ETH Zuerich, CISD and SIS
+# Apache License, Version 2.0
+# https://sissource.ethz.ch/sispub/jhdf5
+cp ../../../src/main/c/jhdf5/*.c java/src/jni/
+patch -Np1 < ../../../hdf5-jhdf5.patch
+aclocal
+automake
+
 #sedinplace '/cmake_minimum_required/d' $(find ./ -iname CMakeLists.txt)
 sedinplace 's/# *cmakedefine/#cmakedefine/g' config/cmake/H5pubconf.h.in
 sedinplace 's/COMPATIBILITY SameMinorVersion/COMPATIBILITY AnyNewerVersion/g' CMakeInstallation.cmake
@@ -139,6 +148,7 @@ esac
 
 # Do we need this? We already built the classes once ...
 cp -r java/src ../
+rm -rf ../java
 mv ../src ../java
 
 cd ../..

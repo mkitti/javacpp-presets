@@ -44,5 +44,8 @@ import org.bytedeco.hdf5.presets.*;
     }
 )
 public class hdf5_java {
-    static { Loader.load(); }
+    static {
+        String hdf5lib = Loader.load();
+        System.setProperty("hdf.hdf5lib.H5.hdf5lib", hdf5lib);
+    }
 }
