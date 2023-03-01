@@ -77,11 +77,11 @@ Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lexists
     htri_t   bval = JNI_FALSE;
     const char *lName;
 
-    PIN_JAVA_STRING(name, lName);
+    PIN_JAVA_STRING(ENVONLY, name, lName, NULL, "H5Lexists: not pinned");
     if (lName != NULL) {
         bval = H5Lexists((hid_t)loc_id, lName, (hid_t)access_id);
 
-        UNPIN_JAVA_STRING(name, lName);
+        UNPIN_JAVA_STRING(ENVONLY, name, lName);
 
         if (bval > 0)
             bval = JNI_TRUE;
@@ -96,6 +96,10 @@ Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lexists
            }
         }
     }
+
+done:
+    if (lName)
+        UNPIN_JAVA_STRING(ENVONLY, name, lName);
 
     return (jboolean)bval;
 } /* end Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lexists */
@@ -120,13 +124,13 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
     H5L_info_t link_info;
     H5O_info_t obj_info;
 
-    PIN_JAVA_STRING(object_name, oName);
+    PIN_JAVA_STRING(ENVONLY, object_name, oName, NULL, "H5Lget_link_info: not pinned");
 
     type = H5Lget_info( (hid_t) loc_id, oName, &link_info, H5P_DEFAULT );
 
     if (type < 0) 
     {
-       UNPIN_JAVA_STRING(object_name, oName);
+       UNPIN_JAVA_STRING(ENVONLY, object_name, oName);
        h5libraryError(env);
        return -1;
     } else {
@@ -134,7 +138,7 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
        if (link_info.type == H5L_TYPE_HARD)
        {
           status = H5Oget_info_by_name1(loc_id, oName, &obj_info, H5P_DEFAULT); 
-          UNPIN_JAVA_STRING(object_name, oName);
+          UNPIN_JAVA_STRING(ENVONLY, object_name, oName);
           if (status  < 0 )
           {
              h5libraryError(env);
@@ -174,6 +178,9 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
           }
        }
     }
+done:
+    if (oName)
+        UNPIN_JAVA_STRING(ENVONLY, object_name, oName);
 
     return (jint)type;
 }
@@ -241,11 +248,11 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
         return -1;
     }
 
-    PIN_JAVA_STRING(group_name, gName);
+    PIN_JAVA_STRING(ENVONLY, group_name, gName, NULL, "H5Lget_link_names_all: not pinned");
 
     oName = malloc(n * sizeof (*oName));
     if (oName == NULL) {
-        UNPIN_JAVA_STRING(group_name, gName);
+        UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
         h5outOfMemory(env, "_H5Lget_link_names_all: malloc failed");
         return -1;
     }
@@ -254,7 +261,7 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
     } /* for (i=0; i<n; i++)*/
     status = H5Lget_link_names_all(env, (hid_t) loc_id, gName,  oName);
 
-    UNPIN_JAVA_STRING(group_name, gName);
+    UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
 
     if (status < 0) {
         h5str_array_free(oName, n);
@@ -268,6 +275,11 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
         } /* for (i=0; i<n; i++)*/
         h5str_array_free(oName, n);
     }
+
+done:
+    if (gName)
+        UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
+
 
     return (jint)status;
 
@@ -373,7 +385,7 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
     jint *tarr;
     int i;
 
-    PIN_JAVA_STRING(group_name, gName);
+    PIN_JAVA_STRING(ENVONLY, group_name, gName, NULL, "H5Lexists: not pinned");
 
     if (oname == NULL) {
         h5nullArgument( env, "H5Lget_link_info_all:  oname is NULL");
@@ -399,7 +411,7 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
 
     oName = malloc(n * sizeof (*oName));
     if (oName == NULL) {
-        UNPIN_JAVA_STRING(group_name, gName);
+        UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
         (*env)->ReleaseIntArrayElements(env,otype,tarr,0);
         h5outOfMemory(env, "H5Lget_link_info_all: malloc failed");
         return -1;
@@ -412,7 +424,7 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
     {
             lName = malloc(n * sizeof (*lName));
             if (lName == NULL) {
-                UNPIN_JAVA_STRING(group_name, gName);
+                UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
                 (*env)->ReleaseIntArrayElements(env,otype,tarr,0);
                 h5str_array_free(oName, n);
                 h5outOfMemory(env, "H5Lget_link_info_all: malloc failed");
@@ -420,7 +432,7 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
             }
             lfName = malloc(n * sizeof (*lfName));
             if (lfName == NULL) {
-                UNPIN_JAVA_STRING(group_name, gName);
+                UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
                 (*env)->ReleaseIntArrayElements(env,otype,tarr,0);
                 h5str_array_free(oName, n);
                 free(lName);
@@ -429,7 +441,7 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
             }
             buf = malloc(n * sizeof (*buf));
             if (buf == NULL) {
-                UNPIN_JAVA_STRING(group_name, gName);
+                UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
                 (*env)->ReleaseIntArrayElements(env,otype,tarr,0);
                 h5str_array_free(oName, n);
                 free(lName);
@@ -445,7 +457,7 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
     }
     status = H5Lget_link_info_all( env, (hid_t) loc_id, gName, oName, (int *)tarr, lName, lfName, buf );
 
-    UNPIN_JAVA_STRING(group_name, gName);
+    UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
     if (status < 0) {
         (*env)->ReleaseIntArrayElements(env,otype,tarr,JNI_ABORT);
         h5str_array_free(oName, n);
@@ -486,6 +498,10 @@ JNIEXPORT jint JNICALL Java_ch_systemsx_cisd_hdf5_hdf5lib_HDFHelper__1H5Lget_1li
         }
         h5str_array_free(oName, n);
     }
+
+done:
+    if (gName)
+        UNPIN_JAVA_STRING(ENVONLY, group_name, gName);
 
     return (jint)status;
 
