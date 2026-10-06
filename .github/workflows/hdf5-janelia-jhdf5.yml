@@ -9,7 +9,7 @@ on:
     inputs:
       janelia-jhdf5-ref:
         description: janelia-jhdf5 branch to test
-        default: github-actions-ci
+        default: windows-test-fixes
 env:
   CI_DEPLOY_MODULE: hdf5
   CI_DEPLOY_PLATFORM: windows-x86_64
@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: JaneliaSciComp/janelia-jhdf5
-          ref: ${{ inputs.janelia-jhdf5-ref || 'github-actions-ci' }}
+          ref: ${{ inputs.janelia-jhdf5-ref || 'windows-test-fixes' }}
           path: janelia-jhdf5
       - uses: actions/setup-java@v4
         with:
@@ -58,7 +58,8 @@ jobs:
         working-directory: janelia-jhdf5
         shell: bash
         # No -U: resolve org.bytedeco:hdf5 from the build installed above, not the published snapshot.
-        run: mvn -B test "-Dmaven.repo.local=C:\jhdf5-m2"
+        # -Djavacpp.platform limits hdf5-platform to the windows-x86_64 natives built above.
+        run: mvn -B test "-Dmaven.repo.local=C:\jhdf5-m2" -Djavacpp.platform=windows-x86_64
       - name: Upload janelia-jhdf5 test reports
         if: always()
         uses: actions/upload-artifact@v4
