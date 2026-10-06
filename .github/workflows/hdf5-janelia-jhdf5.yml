@@ -31,6 +31,19 @@ jobs:
           unzip -l "$jar" | grep -E '\.dll$'
           # Only builds with the fix bundle the C++ library; fail early if this is the old one.
           unzip -l "$jar" | grep -q 'hdf5_cpp\.dll'
+      - name: Add the macosx-arm64 natives that janelia-jhdf5 always depends on
+        shell: bash
+        # janelia-jhdf5 has a compile dependency on the macosx-arm64 natives on every platform.
+        # They aren't used on Windows, but Maven must resolve them for the locally installed
+        # snapshot, so install the published jar next to this build.
+        run: |
+          mvn -B dependency:get "-Dmaven.repo.local=C:\published-m2" \
+            -Dartifact=org.bytedeco:hdf5:2.2.0-1.5.15-SNAPSHOT:jar:macosx-arm64 \
+            -DremoteRepositories=central-portal-snapshots::default::https://central.sonatype.com/repository/maven-snapshots/
+          mvn -B install:install-file "-Dmaven.repo.local=C:\jhdf5-m2" \
+            -Dfile=/c/published-m2/org/bytedeco/hdf5/2.2.0-1.5.15-SNAPSHOT/hdf5-2.2.0-1.5.15-SNAPSHOT-macosx-arm64.jar \
+            -DgroupId=org.bytedeco -DartifactId=hdf5 -Dversion=2.2.0-1.5.15-SNAPSHOT \
+            -Dclassifier=macosx-arm64 -Dpackaging=jar -DgeneratePom=false
       - name: Check out janelia-jhdf5
         uses: actions/checkout@v4
         with:
