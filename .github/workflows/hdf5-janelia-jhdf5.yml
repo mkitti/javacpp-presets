@@ -64,10 +64,12 @@ jobs:
             janelia-jhdf5/hs_err_pid*.log
           if-no-files-found: ignore
       - uses: actions/setup-java@v4
+        if: ${{ !cancelled() }}
         with:
           distribution: zulu
           java-version: '8'
       - name: Test janelia-jhdf5 (Java 8)
+        if: ${{ !cancelled() }}
         working-directory: janelia-jhdf5
         shell: bash
         run: mvn -B clean test "-Dmaven.repo.local=$JHDF5_M2" -Djavacpp.platform=windows-x86_64
@@ -81,24 +83,24 @@ jobs:
             janelia-jhdf5/hs_err_pid*.log
           if-no-files-found: ignore
       - uses: actions/setup-java@v4
-        if: env.N5_REF != ''
+        if: ${{ !cancelled() && env.N5_REF != '' }}
         with:
           distribution: zulu
           java-version: '21'
       - name: Install janelia-jhdf5 for n5-hdf5
-        if: env.N5_REF != ''
+        if: ${{ !cancelled() && env.N5_REF != '' }}
         working-directory: janelia-jhdf5
         shell: bash
         run: mvn -B clean install -DskipTests -Djacoco.skip=true "-Dmaven.repo.local=$JHDF5_M2" -Djavacpp.platform=windows-x86_64
       - name: Check out n5-hdf5
-        if: env.N5_REF != ''
+        if: ${{ !cancelled() && env.N5_REF != '' }}
         uses: actions/checkout@v4
         with:
           repository: saalfeldlab/n5-hdf5
           ref: ${{ env.N5_REF }}
           path: n5-hdf5
       - name: Test n5-hdf5
-        if: env.N5_REF != ''
+        if: ${{ !cancelled() && env.N5_REF != '' }}
         working-directory: n5-hdf5
         shell: bash
         # pom-scijava's enforcer rejects SNAPSHOT dependencies, which is the point of this run.
@@ -152,10 +154,12 @@ jobs:
             janelia-jhdf5/hs_err_pid*.log
           if-no-files-found: ignore
       - uses: actions/setup-java@v4
+        if: ${{ !cancelled() }}
         with:
           distribution: zulu
           java-version: '8'
       - name: Test janelia-jhdf5 (Java 8)
+        if: ${{ !cancelled() }}
         working-directory: janelia-jhdf5
         shell: bash
         run: mvn -B clean test "-Dmaven.repo.local=$JHDF5_M2" -Djavacpp.platform=linux-x86_64
@@ -169,24 +173,24 @@ jobs:
             janelia-jhdf5/hs_err_pid*.log
           if-no-files-found: ignore
       - uses: actions/setup-java@v4
-        if: env.N5_REF != ''
+        if: ${{ !cancelled() && env.N5_REF != '' }}
         with:
           distribution: zulu
           java-version: '21'
       - name: Install janelia-jhdf5 for n5-hdf5
-        if: env.N5_REF != ''
+        if: ${{ !cancelled() && env.N5_REF != '' }}
         working-directory: janelia-jhdf5
         shell: bash
         run: mvn -B clean install -DskipTests -Djacoco.skip=true "-Dmaven.repo.local=$JHDF5_M2" -Djavacpp.platform=linux-x86_64
       - name: Check out n5-hdf5
-        if: env.N5_REF != ''
+        if: ${{ !cancelled() && env.N5_REF != '' }}
         uses: actions/checkout@v4
         with:
           repository: saalfeldlab/n5-hdf5
           ref: ${{ env.N5_REF }}
           path: n5-hdf5
       - name: Test n5-hdf5
-        if: env.N5_REF != ''
+        if: ${{ !cancelled() && env.N5_REF != '' }}
         working-directory: n5-hdf5
         shell: bash
         run: mvn -B test -Denforcer.skip=true "-Dmaven.repo.local=$JHDF5_M2" -Djavacpp.platform=linux-x86_64
